@@ -36,7 +36,7 @@
           "Fn::Join": [
             "",
             [
-              "https://s3-eu-west-1.amazonaws.com/smj-cfn-templates/cfn_templates/",
+              "https://s3-eu-west-1.amazonaws.com/builder-cfn-templatex/templates/",
               {
                 "Ref": "CFNEnvironment"
               },
@@ -52,7 +52,7 @@
         "Parameters": {
           "Environment": { "Ref": "CFNEnvironment" },
           "ServiceNameTag": { "Ref": "ServiceNameTag" },
-          "IngestBucketName": {
+          "IngestDataBucketName": {
             "Fn::Join": [
               "-",
               [
@@ -66,7 +66,7 @@
               ]
             ]
           },
-          "TransformBucketName": {
+          "TransformDataBucketName": {
             "Fn::Join": [
               "-",
               [
@@ -90,14 +90,14 @@
         "Ref": "platformStack"
       }
     },
-    "IngestBucketName": {
+    "IngestDataBucket": {
       "Value": {
-        "Ref": "IngestBucketName"
+        "Fn::GetAtt": ["platformStack", "Outputs.IngestDataBucketRef"]
       }
     },
-    "TransformBucketName": {
+    "TransformDataBucket": {
       "Value": {
-        "Ref": "TransformBucketName"
+        "Fn::GetAtt": ["platformStack", "Outputs.TransformDataBucketRef"]
       }
     }
   }

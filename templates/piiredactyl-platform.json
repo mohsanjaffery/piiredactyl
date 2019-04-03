@@ -13,13 +13,13 @@
         "MaxLength": "64",
         "Default": "piiredactyl"
       },
-      "IngestBucketName": {
+      "IngestDataBucketName": {
         "Type": "String",
         "Description": "S3 Bucket holding data to by analysed",
         "MaxLength": "64",
         "Default": "piiredactyl-dev-data-ingest"
       },
-       "TransformBucketName": {
+       "TransformDataBucketName": {
         "Type": "String",
         "Description": "S3 Bucket holding data to by analysed",
         "MaxLength": "64",
@@ -91,10 +91,9 @@
         },
         "IngestDataBucket": {
             "Type": "AWS::S3::Bucket",
-	    "DeletionPolicy" : "Retain",
             "Properties": {
                 "BucketName": {
-                  "Ref": "IngestBucketName"
+                  "Ref": "IngestDataBucketName"
                 },
                 "AccessControl": "BucketOwnerFullControl",
                 "Tags": [
@@ -105,10 +104,9 @@
         },
         "TransformDataBucket": {
             "Type": "AWS::S3::Bucket",
-	    "DeletionPolicy" : "Retain",
             "Properties": {
                 "BucketName": {
-                  "Ref": "TransformBucketName"
+                  "Ref": "TransformDataBucketName"
                 },
                 "AccessControl": "BucketOwnerFullControl",
                 "Tags": [
@@ -144,7 +142,7 @@
           "Ref": "GlueJobRole"
         }
       },
-      "IngestmDataBucketRef": {
+      "IngestDataBucketRef": {
         "Value": {
           "Ref": "IngestDataBucket"
         }

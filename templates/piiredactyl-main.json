@@ -1,0 +1,104 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description":
+    "PIIredactyl - BuildLife @BUILD_NUMBER@ - Main template.",
+  "Parameters": {
+    "ServiceNameTag": {
+      "Description": "The service name tag",
+      "Type": "String",
+      "Default": "piiredactyl"
+    },
+    "CFNEnvironment": {
+      "Description": "uat/prod etc",
+      "Type": "String",
+      "AllowedValues": [
+        "dev",
+        "ci",
+        "test",
+        "perf",
+        "uat",
+        "staging",
+        "prod"
+      ],
+      "Default": "dev"
+    },
+    "BuildNumber": {
+      "Description": "Build number",
+      "Type": "String",
+      "Default": "000"
+    }
+  },
+  "Resources": {
+    "platformStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3-eu-west-1.amazonaws.com/smj-cfn-templates/cfn_templates/",
+              {
+                "Ref": "CFNEnvironment"
+              },
+              "/",
+              {
+                "Ref": "BuildNumber"
+              },
+              "/piiredactyl-platform.json"
+            ]
+          ]
+        },
+        "TimeoutInMinutes": 60,
+        "Parameters": {
+          "Environment": { "Ref": "CFNEnvironment" },
+          "ServiceNameTag": { "Ref": "ServiceNameTag" },
+          "IngestBucketName": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "ServiceNameTag"
+                },
+                {
+                  "Ref": "CFNEnvironment"
+                },
+                "data-ingest"
+              ]
+            ]
+          },
+          "TransformBucketName": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "ServiceNameTag"
+                },
+                {
+                  "Ref": "CFNEnvironment"
+                },
+                "data-transform"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "platformStackRef": {
+      "Value": {
+        "Ref": "platformStack"
+      }
+    },
+    "IngestBucketName": {
+      "Value": {
+        "Ref": "IngestBucketName"
+      }
+    },
+    "TransformBucketName": {
+      "Value": {
+        "Ref": "TransformBucketName"
+      }
+    }
+  }
+}

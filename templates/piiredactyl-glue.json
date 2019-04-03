@@ -1,0 +1,115 @@
+{
+    "Description": "AWS Glue",
+    "Parameters": {
+        "GlueS3Bucket": {
+            "Type": "String",
+	    "Description": "Data Bucket",
+            "MaxLength": "64",
+	    "Default": "piiredactyl-dev-data-ingest"
+        },
+        "GlueJobRoleArn": {
+            "Type": "String",
+	    "Description": "Data Bucket",
+            "MaxLength": "64",
+	    "Default": "arn:aws:iam::476812294830:role/piiredactyl-glue-role"
+        },
+        "GlueJobRole": {
+            "Type": "String",
+	    "Description": "Data Bucket",
+            "MaxLength": "64",
+	    "Default": "piiredactyl-glue-role"
+        }
+
+    },
+    "Resources": {
+        "GlueDatabase": {
+            "Type": "AWS::Glue::Database",
+            "Properties": {
+                "CatalogId": {
+                    "Ref": "AWS::AccountId"
+                },
+                "DatabaseInput": {
+                    "Name": "log_catalogue"
+                }
+            }
+        },
+        "GlueClassifier": {
+            "Type": "AWS::Glue::Classifier",
+            "Properties": {
+                "GrokClassifier": {
+                    "Name": "piiredactylClassifier",
+                    "Classification": "Cloudtrail",
+                    "GrokPattern": "%{NOTSPACE:language} %{NOTSPACE:page_title} %{NUMBER:hits:long} %{NUMBER:retrieved_size:long}"
+                }
+            }
+        },
+        "GlueCrawler": {
+            "Type": "AWS::Glue::Crawler",
+            "Properties": {
+                "Name": "piiredactylCrawler",
+                "Role": {
+                    "Ref": "GlueJobRoleArn"
+                },
+                "DatabaseName": {
+                    "Ref": "GlueDatabase"
+                },
+		"TablePrefix": "piiredactyl_",
+                "Targets": {
+                    "S3Targets": [
+                        {
+                            "Path": {
+                                "Ref": "GlueS3Bucket"
+                            }
+                        }
+                    ]
+                },
+                "SchemaChangePolicy": {
+                    "UpdateBehavior": "UPDATE_IN_DATABASE",
+                    "DeleteBehavior": "LOG"
+                },
+                "Schedule": {
+                    "ScheduleExpression": "cron(0/10 * ? * MON-FRI *)"
+                }
+            }
+        },
+        "GlueJob": {
+            "Type": "AWS::Glue::Job",
+            "Properties": {
+                "Command": {
+                    "Name": "glueetl",
+                    "ScriptLocation": "s3://smj-cfn-templates/scripts/dev/000/piiredactyl.py"
+                },
+                "DefaultArguments": {
+                    "--job-bookmark-option": "job-bookmark-enable"
+                },
+                "ExecutionProperty": {
+                    "MaxConcurrentRuns": 2
+                },
+                "MaxRetries": 0,
+                "Name": "piiredactyl-job1",
+                "Role": {
+                    "Ref": "GlueJobRole"
+                }
+            }
+        },
+        "ScheduledJobTrigger": {
+          "Type": "AWS::Glue::Trigger",
+          "Properties": {
+            "Type": "SCHEDULED",
+            "Description": "DESCRIPTION_SCHEDULED",
+            "Schedule": "cron(0/10 * ? * MON-FRI *)",
+            "Actions": [
+              {
+                "JobName": {
+                  "Ref": "GlueJob"
+		},
+                "Arguments": {
+                  "--job-bookmark-option": "job-bookmark-enable"
+                }
+              }
+            ],
+            "Name": "piiredactyl-trigger-scheduled"
+          }
+        }
+    }
+}

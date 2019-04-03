@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "ServiceNameTag",
+        "ParameterValue": "piiredactyl"
+    },
+    {
+        "ParameterKey": "CFNEnvironment",
+        "ParameterValue": "uat"
+    }
+]

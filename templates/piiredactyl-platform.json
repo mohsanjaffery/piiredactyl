@@ -1,0 +1,168 @@
+{
+    "Description": "Platform",
+    "Parameters": {
+      "Environment": {
+        "Type": "String",
+        "Description": "The Environment type for this app or service",
+        "MaxLength": "64",
+        "Default": "dev"
+      },
+      "ServiceNameTag": {
+        "Type": "String",
+        "Description": "The identified ITIL service",
+        "MaxLength": "64",
+        "Default": "piiredactyl"
+      },
+      "IngestBucketName": {
+        "Type": "String",
+        "Description": "S3 Bucket holding data to by analysed",
+        "MaxLength": "64",
+        "Default": "piiredactyl-dev-data-ingest"
+      },
+       "TransformBucketName": {
+        "Type": "String",
+        "Description": "S3 Bucket holding data to by analysed",
+        "MaxLength": "64",
+        "Default": "piiredactyl-dev-data-transform"
+      }
+    },
+    "Resources": {
+        "GlueJobRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "piiredactyl-glue-role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "glue.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": "S3BucketPermissions",
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "s3:Get*",
+                            "s3:List*"
+                          ],
+                          "Resource": [
+                            "arn:aws:s3:::piiredactyl-dev-data-ingest/*",
+			    "arn:aws:s3:::piiredactyl-dev-data-ingest",
+			    "arn:aws:s3:::smj-cfn-templates/*",
+			    "arn:aws:s3:::smj-cfn-templates"
+			  ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "s3:Put*",
+                            "s3:Get*",
+                            "s3:List*"
+                          ],
+                          "Resource": [
+                            "arn:aws:s3:::piiredactyl-dev-data-transform/*",
+			    "arn:aws:s3:::piiredactyl-dev-data-transform"
+			  ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "ManagedPolicyArns": [
+                  "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+                  "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+                ],
+                "Path": "/"
+            }
+        },
+        "IngestDataBucket": {
+            "Type": "AWS::S3::Bucket",
+	    "DeletionPolicy" : "Retain",
+            "Properties": {
+                "BucketName": {
+                  "Ref": "IngestBucketName"
+                },
+                "AccessControl": "BucketOwnerFullControl",
+                "Tags": [
+                  { "Key": "ServiceName", "Value": { "Ref": "ServiceNameTag" } },
+                  { "Key": "Environment", "Value": { "Ref": "Environment" } }
+                ]
+            }
+        },
+        "TransformDataBucket": {
+            "Type": "AWS::S3::Bucket",
+	    "DeletionPolicy" : "Retain",
+            "Properties": {
+                "BucketName": {
+                  "Ref": "TransformBucketName"
+                },
+                "AccessControl": "BucketOwnerFullControl",
+                "Tags": [
+                  { "Key": "ServiceName", "Value": { "Ref": "ServiceNameTag" } },
+                  { "Key": "Environment", "Value": { "Ref": "Environment" } }
+                ]
+            }
+        },
+	"RedactKey": {
+           "Type": "AWS::SSM::Parameter",
+           "Properties": {
+              "Name": "redact_key",
+              "Type": "StringList",
+              "Value": "userIdentity,accessKeyId",
+              "Description": "SSM Parameter of type StringList.",
+              "AllowedPattern" : "^[a-zA-Z]{1,15}$"
+           }
+        },
+        "RedactValue": {
+           "Type": "AWS::SSM::Parameter",
+           "Properties": {
+              "Name": "redact_value",
+              "Type": "String",
+              "Value": "redacted",
+              "Description": "SSM Parameter for redaction value.",
+              "AllowedPattern" : "^[a-zA-Z]{1,15}$"
+           }
+        }
+    },
+    "Outputs": {
+      "GlueJobRoleRef": {
+        "Value": {
+          "Ref": "GlueJobRole"
+        }
+      },
+      "IngestmDataBucketRef": {
+        "Value": {
+          "Ref": "IngestDataBucket"
+        }
+      },
+      "TransformDataBucketRef": {
+        "Value": {
+          "Ref": "TransformDataBucket"
+        }
+      },
+      "RedactKeyRef": {
+        "Value": {
+          "Ref": "RedactKey"
+        }
+      },
+      "RedactValueRef": {
+        "Value": {
+          "Ref": "RedactValue"
+        }
+      }
+    }
+}

@@ -16,14 +16,12 @@
       "IngestDataBucketName": {
         "Type": "String",
         "Description": "S3 Bucket holding data to by analysed",
-        "MaxLength": "64",
-        "Default": "piiredactyl-dev-data-ingest"
+        "MaxLength": "64"
       },
        "TransformDataBucketName": {
         "Type": "String",
         "Description": "S3 Bucket holding data to by analysed",
-        "MaxLength": "64",
-        "Default": "piiredactyl-dev-data-transform"
+        "MaxLength": "64"
       }
     },
     "Resources": {
@@ -60,11 +58,32 @@
                             "s3:List*"
                           ],
                           "Resource": [
-                            "arn:aws:s3:::piiredactyl-dev-data-ingest/*",
-			    "arn:aws:s3:::piiredactyl-dev-data-ingest",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:s3:::",
+                                  {
+                                    "Ref": "IngestDataBucket"
+                                  },
+                                  "/*"
+                                ]
+                              ]
+                            },
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:s3:::",
+                                  {
+                                    "Ref": "IngestDataBucket"
+                                  }
+                                ]
+                              ]
+                            },
 			    "arn:aws:s3:::smj-cfn-templates/*",
 			    "arn:aws:s3:::smj-cfn-templates"
-			  ]
+                          ]
                         },
                         {
                           "Effect": "Allow",
@@ -73,9 +92,30 @@
                             "s3:Get*",
                             "s3:List*"
                           ],
-                          "Resource": [
-                            "arn:aws:s3:::piiredactyl-dev-data-transform/*",
-			    "arn:aws:s3:::piiredactyl-dev-data-transform"
+                          "Resource": [ 
+                            { 
+                              "Fn::Join": [
+                                "", 
+				[
+				  "arn:aws:s3:::",
+                                  { 
+                                    "Ref": "TransformDataBucket"
+				  },
+				  "/*"
+				]
+			      ] 
+			    },
+                            { 
+                              "Fn::Join": [
+                                "", 
+				[
+				  "arn:aws:s3:::",
+                                  { 
+                                    "Ref": "TransformDataBucket"
+				  }
+				]
+			      ] 
+			    }
 			  ]
                         }
                       ]

@@ -26,6 +26,11 @@
       "Description": "Build number",
       "Type": "String",
       "Default": "000"
+    },
+    "ScriptURL": {
+      "Description": "Glue Job Script",
+      "Type": "String",
+      "Default": "builder-cfn-templatex"
     }
   },
   "Resources": {
@@ -52,6 +57,7 @@
         "Parameters": {
           "Environment": { "Ref": "CFNEnvironment" },
           "ServiceNameTag": { "Ref": "ServiceNameTag" },
+	  "ScriptURL": { "Ref": "ScriptURL" },
           "IngestDataBucketName": {
             "Fn::Join": [
               "-",

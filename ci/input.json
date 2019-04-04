@@ -5,6 +5,6 @@
     },
     {
         "ParameterKey": "CFNEnvironment",
-        "ParameterValue": "uat"
+        "ParameterValue": "dev"
     }
 ]

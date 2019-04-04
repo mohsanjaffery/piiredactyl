@@ -33,16 +33,6 @@
                 }
             }
         },
-        "GlueClassifier": {
-            "Type": "AWS::Glue::Classifier",
-            "Properties": {
-                "GrokClassifier": {
-                    "Name": "piiredactylClassifier",
-                    "Classification": "Cloudtrail",
-                    "GrokPattern": "%{NOTSPACE:language} %{NOTSPACE:page_title} %{NUMBER:hits:long} %{NUMBER:retrieved_size:long}"
-                }
-            }
-        },
         "GlueCrawler": {
             "Type": "AWS::Glue::Crawler",
             "Properties": {

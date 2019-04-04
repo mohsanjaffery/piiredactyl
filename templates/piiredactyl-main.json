@@ -30,7 +30,7 @@
     "ScriptURL": {
       "Description": "Glue Job Script",
       "Type": "String",
-      "Default": "builder-cfn-templatex"
+      "Default": "builder-cfn-templates"
     }
   },
   "Resources": {
@@ -41,7 +41,7 @@
           "Fn::Join": [
             "",
             [
-              "https://s3-eu-west-1.amazonaws.com/builder-cfn-templatex/templates/",
+              "https://s3-eu-west-1.amazonaws.com/builder-cfn-templates/templates/",
               {
                 "Ref": "CFNEnvironment"
               },
@@ -57,7 +57,7 @@
         "Parameters": {
           "Environment": { "Ref": "CFNEnvironment" },
           "ServiceNameTag": { "Ref": "ServiceNameTag" },
-	  "ScriptURL": { "Ref": "ScriptURL" },
+          "ScriptURL": { "Ref": "ScriptURL" },
           "IngestDataBucketName": {
             "Fn::Join": [
               "-",

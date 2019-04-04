@@ -202,27 +202,27 @@
         }
     },
     "Outputs": {
-      "GlueJobRoleRef": {
+      "GlueJobRole": {
         "Value": {
           "Ref": "GlueJobRole"
         }
       },
-      "IngestDataBucketRef": {
+      "IngestDataBucket": {
         "Value": {
           "Ref": "IngestDataBucket"
         }
       },
-      "TransformDataBucketRef": {
+      "TransformDataBucket": {
         "Value": {
           "Ref": "TransformDataBucket"
         }
       },
-      "RedactKeyRef": {
+      "RedactKey": {
         "Value": {
           "Ref": "RedactKey"
         }
       },
-      "RedactValueRef": {
+      "RedactValue": {
         "Value": {
           "Ref": "RedactValue"
         }

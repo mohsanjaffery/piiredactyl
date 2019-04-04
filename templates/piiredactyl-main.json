@@ -98,12 +98,12 @@
     },
     "IngestDataBucket": {
       "Value": {
-        "Fn::GetAtt": ["platformStack", "Outputs.IngestDataBucketRef"]
+        "Fn::GetAtt": ["platformStack", "Outputs.IngestDataBucket"]
       }
     },
     "TransformDataBucket": {
       "Value": {
-        "Fn::GetAtt": ["platformStack", "Outputs.TransformDataBucketRef"]
+        "Fn::GetAtt": ["platformStack", "Outputs.TransformDataBucket"]
       }
     }
   }

@@ -222,10 +222,13 @@
           "Ref": "RedactKey"
         }
       },
-      "RedactValue": {
+      "GlueJobRoleName": {
         "Value": {
-          "Ref": "RedactValue"
+          "Ref": "GlueJobRole"
         }
+      },
+      "GlueJobRoleArn": {
+        "Value": { "Fn::GetAtt": ["GlueJobRole", "Arn"] }
       }
     }
 }

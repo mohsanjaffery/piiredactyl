@@ -88,12 +88,66 @@
           }
         }
       }
+    },
+    "glueStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3-eu-west-1.amazonaws.com/builder-cfn-templates/templates/",
+              {
+                "Ref": "CFNEnvironment"
+              },
+              "/",
+              {
+                "Ref": "BuildNumber"
+              },
+              "/piiredactyl-glue.json"
+            ]
+          ]
+        },
+        "TimeoutInMinutes": 60,
+        "Parameters": {
+          "Environment": { "Ref": "CFNEnvironment" },
+          "BuildNumber": { "Ref": "BuildNumber" },
+          "ServiceNameTag": { "Ref": "ServiceNameTag" },
+          "ScriptURL": { "Ref": "ScriptURL" },
+          "GlueJobRoleName":{"Fn::GetAtt":["platformStack","Outputs.GlueJobRoleName"]},
+          "GlueJobRoleArn":{"Fn::GetAtt":["platformStack","Outputs.GlueJobRoleArn"]},
+          "IngestDataBucketName": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "ServiceNameTag"
+                },
+                {
+                  "Ref": "CFNEnvironment"
+                },
+                "data-ingest"
+              ]
+            ]
+          }
+        }
+      }
     }
   },
   "Outputs": {
-    "platformStackRef": {
+    "platformStack": {
       "Value": {
         "Ref": "platformStack"
+      }
+    },
+    "GlueJobRoleName": {
+      "Value": {
+        "Fn::GetAtt": ["platformStack", "Outputs.GlueJobRoleName"]
+      }
+    },
+    "GlueJobRoleArn": {
+      "Value": {
+        "Fn::GetAtt": ["platformStack", "Outputs.GlueJobRoleArn"]
       }
     },
     "IngestDataBucket": {

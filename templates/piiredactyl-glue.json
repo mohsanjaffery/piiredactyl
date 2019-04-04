@@ -1,25 +1,39 @@
 {
     "Description": "AWS Glue",
     "Parameters": {
-        "GlueS3Bucket": {
-            "Type": "String",
-	    "Description": "Data Bucket",
-            "MaxLength": "64",
-	    "Default": "piiredactyl-dev-data-ingest"
-        },
         "GlueJobRoleArn": {
             "Type": "String",
-	    "Description": "Data Bucket",
-            "MaxLength": "64",
-	    "Default": "arn:aws:iam::476812294830:role/piiredactyl-glue-role"
+	    "Description": "Role Arn",
+            "MaxLength": "64"
         },
-        "GlueJobRole": {
+        "GlueJobRoleName": {
             "Type": "String",
-	    "Description": "Data Bucket",
-            "MaxLength": "64",
-	    "Default": "piiredactyl-glue-role"
-        }
-
+	    "Description": "Role Name",
+            "MaxLength": "64"
+        },
+        "Environment": {
+          "Type": "String",
+          "Description": "The Environment type for this app or service",
+          "MaxLength": "64"
+        },
+        "BuildNumber": {
+          "Description": "Build number",
+          "Type": "String"
+        },
+        "ServiceNameTag": {
+          "Type": "String",
+          "Description": "The identified ITIL service",
+          "MaxLength": "64"
+        },
+        "IngestDataBucketName": {
+          "Type": "String",
+          "Description": "S3 Bucket holding data to by analysed",
+          "MaxLength": "64"
+        },
+       "ScriptURL": {
+         "Description": "Glue Job Script",
+         "Type": "String"
+      }
     },
     "Resources": {
         "GlueDatabase": {
@@ -36,19 +50,19 @@
         "GlueCrawler": {
             "Type": "AWS::Glue::Crawler",
             "Properties": {
-                "Name": "piiredactylCrawler",
+                "Name": { "Fn::Join": [ "", [ { "Ref": "ServiceNameTag" }, "Crawler" ] ] },
                 "Role": {
                     "Ref": "GlueJobRoleArn"
                 },
                 "DatabaseName": {
                     "Ref": "GlueDatabase"
                 },
-		"TablePrefix": "piiredactyl_",
+		"TablePrefix": { "Fn::Join": [ "", [ { "Ref": "ServiceNameTag" }, "_" ] ] },
                 "Targets": {
                     "S3Targets": [
                         {
                             "Path": {
-                                "Ref": "GlueS3Bucket"
+                                "Ref": "IngestDataBucketName"
                             }
                         }
                     ]
@@ -67,7 +81,7 @@
             "Properties": {
                 "Command": {
                     "Name": "glueetl",
-                    "ScriptLocation": "s3://smj-cfn-templates/scripts/dev/000/piiredactyl.py"
+                    "ScriptLocation": { "Fn::Join": [ "/", [ { "Ref": "ScriptURL" }, "scripts",{ "Ref": "Environment" },{ "Ref": "BuildNumber" }, "piiredactyl.py" ] ] } 
                 },
                 "DefaultArguments": {
                     "--job-bookmark-option": "job-bookmark-enable"
@@ -76,9 +90,9 @@
                     "MaxConcurrentRuns": 2
                 },
                 "MaxRetries": 0,
-                "Name": "piiredactyl-job1",
+                "Name": { "Fn::Join": [ "-", [ { "Ref": "ServiceNameTag" }, "job1" ] ] },
                 "Role": {
-                    "Ref": "GlueJobRole"
+                    "Ref": "GlueJobRoleName"
                 }
             }
         },
@@ -98,8 +112,20 @@
                 }
               }
             ],
-            "Name": "piiredactyl-trigger-scheduled"
+            "Name": { "Fn::Join": [ "-", [ { "Ref": "ServiceNameTag" }, "trigger-scheduled" ] ] }
           }
         }
+    },
+    "Outputs": {
+      "GlueJobRoleArnX": {
+        "Value": {
+          "Ref": "GlueJobRoleArn"
+        }
+      },
+      "GlueJobRoleNamex": {
+        "Value": {
+          "Ref": "GlueJobRoleName"
+        }
+      }
     }
 }

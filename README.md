@@ -29,3 +29,49 @@ Please make sure to update tests as appropriate.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+
+## Hacky install
+
+Copy nested templates to cfn-repo
+
+```bash
+aws s3 cp piiredactyl-platform.json   s3://builder-cfn-templates/templates/dev/000/piiredactyl-platform.json
+aws s3 cp piiredactyl-glue.json   s3://builder-cfn-templates/templates/dev/000/piiredactyl-glue.json
+```
+
+Copy scripts to cfn-repo
+
+```bash
+aws s3 cp piiredactyl.py   s3://builder-cfn-templates/scripts/dev/000/piiredactyl.py
+```
+
+Launch main CFN template
+
+```bash
+aws cloudformation create-stack --capabilities CAPABILITY_NAMED_IAM --stack-name piiredactyl --template-body file://piiredactyl-main.json
+```
+
+Copy Sample Log data into Ingest bucket. Obtain bucket name with the following
+
+```bash
+aws cloudformation describe-stacks --stack-name piiredactyl |jq '.Stacks[].Outputs[]|select(.OutputKey=="IngestDataBucket")|.OutputValue'
+```
+
+Run Glue crawler
+
+```bash
+aws <command> <subcommand>
+```
+
+Run Glue script
+
+```bash
+aws <command> <subcommand>
+```
+
+Observe transformed log in Transform bucket.  Obtain bucket name with the following
+
+```bash
+aws cloudformation describe-stacks --stack-name piiredactyl |jq '.Stacks[].Outputs[]|select(.OutputKey=="TransformDataBucket")|.OutputValue'
+```
